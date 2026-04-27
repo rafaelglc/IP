@@ -14,12 +14,13 @@ def mapa(mapa):
     return matriz_mapa
 
 def percursos(matriz_mapa, percurso):
-    ponto_inicial=percurso[0][1]
     
+    percurso_atual=percurso
+
     d1=matriz_mapa[0][0]
     d2=matriz_mapa[0][8]
     d3=matriz_mapa[8][0]
-    D4=matriz_mapa[8][8]
+    d4=matriz_mapa[8][8]
 
     i=percurso[0]
     j=percurso[1]
@@ -34,9 +35,46 @@ def percursos(matriz_mapa, percurso):
     vantagem=Distancia*10
     vantagem_incial=60
 
-    return vantagem, vantagem_incial
+    return vantagem, vantagem_incial, percurso_atual,d1, d2, d3, d4, d, e, c, b 
 
-def new_percurso():
+def new_percurso(matriz_mapa, movimento, percurso_atual d1, d2, d3, d4, d, e, c, b, vantagem, shack, jungle, lt, time_shack, time_jungle, time_lt, time_M):
+
+    if movimento=="d1":
+        percurso_atual=matriz_mapa[0][0]
+    elif movimento=="d2":
+        percurso_atual=matriz_mapa[0][8]
+    elif movimento=="d3":
+        percurso_atual=matriz_mapa[8][0]
+    elif movimento=="d4":
+        percurso_atual=matriz_mapa[8][8]
+
+    i=percurso_atual[0]
+    j=percurso_atual[1]
+    
+    if movimento=="d":
+        percurso_atual=matriz_mapa[i+1]
+    elif movimento=="e":
+        percurso_atual=matriz_mapa[i-1]
+    elif movimento=="c":
+        percurso_atual=matriz_mapa[j+1]
+    elif movimento=="e":
+        percurso_atual=matriz_mapa[j-1]
+
+
+
+
+
+    if percurso_atual==shack:
+        vantagem+=time_shack
+    elif percurso_atual==jungle:
+        vantagem+=time_jungle
+    elif percurso_atual==lt:
+        vantagem+=time_lt
+    else:
+        vantagem+=time_M
+
+
+    return vantagem
 
 def att_geradores(geradores, vantagem, end_game):
     if vantagem>100:
@@ -55,9 +93,9 @@ def estruturas(mapa, matriz_mapa):
     time_M=5
 
     if mapa=="MecMillan":
-        matriz_mapa[5][1]="C"
-        matriz_mapa[3][7]="J"
-        matriz_mapa=[1][5]="LT"
+        shake=matriz_mapa[5][1]="C"
+        jungle=matriz_mapa[3][7]="J"
+        lt=matriz_mapa=[1][5]="LT"
 
     elif mapa=="Autohaven":
         matriz_mapa[1][6]="C"
@@ -94,3 +132,4 @@ coordenadas_iniciais=input()
 while end_game==False:
     sobrevivente=input()
     percurso=input().split(",")
+    movimento=input()
