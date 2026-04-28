@@ -1,11 +1,13 @@
 sobreviventes=["Kate", "Dwight", "Ada", "Vee"]
+ganchos_sobreviventes=[0, 0, 0, 0]
+total_ganchos=0
 assasinos=["Spirit", "Singularidade", "Huntress"]
 geradores=0
 time_gerador=100
-enganchado=0
+
 end_game=False
 
-def mapa(mapa):
+def Mapa(mapa):
 
     matriz_mapa=[["M" for _ in range(9)] for _ in range(9)]
 
@@ -13,109 +15,80 @@ def mapa(mapa):
 
     return matriz_mapa
 
-def percursos(matriz_mapa, coordenadas_iniciais):
+def percursos(matriz_mapa, coordenadas_iniciais, new_linha, maior_dist):
     
     
     linha_atual=coordenadas_iniciais[0]
     coluna_atual=coordenadas_iniciais[1]
 
 
-    d1=matriz_mapa[0][0]
-    d2=matriz_mapa[0][8]
-    d3=matriz_mapa[8][0]
-    d4=matriz_mapa[8][8]
-
-
-    d=matriz_mapa[i+1]
-    e=matriz_mapa[i-1]
-    c=matriz_mapa[i][j+1]
-    b=matriz_mapa[i][j-1]
-
-    if nova_linha < 0 or nova_linha > 8:
+    if new_linha < 0 or new_linha > 8:
         print("❌ Travou na parede! Deixou fácil pro killer!")
 
 
     Distancia = (matriz_mapa[0] - matriz_mapa[1]) + (matriz_mapa[0][0] - matriz_mapa[0][1])
-    vantagem=Distancia*10
+    vantagem=maior_dist*10
     vantagem_incial=60
 
-    return vantagem, vantagem_incial, percurso_atual,d1, d2, d3, d4, d, e, c, b 
+    return vantagem, vantagem_incial, matriz_mapa, linha_atual, coluna_atual
 
-def new_percurso(matriz_mapa, movimento, percurso_atual d1, d2, d3, d4, d, e, c, b, vantagem, shack, jungle, lt, time_shack, time_jungle, time_lt, time_M):
+def new_percurso(movimento, percurso_atual, linha_atual, coluna_atual, vantagem):
+
+    new_linha, new_coluna= linha_atual, coluna_atual
 
     if movimento=="d1":
-        percurso_atual=matriz_mapa[0][0]
+        new_linha -= 1; new_coluna -= 1
     elif movimento=="d2":
-        percurso_atual=matriz_mapa[0][8]
+        new_linha -= 1; new_coluna += 1
     elif movimento=="d3":
-        percurso_atual=matriz_mapa[8][0]
+        new_linha += 1; new_coluna -= 1
     elif movimento=="d4":
-        percurso_atual=matriz_mapa[8][8]
+        new_linha += 1; new_coluna += 1
 
-    i=percurso_atual[0]
-    j=percurso_atual[1]
     
     if movimento=="d":
-        percurso_atual=matriz_mapa[i+1]
+        new_coluna += 1
     elif movimento=="e":
-        percurso_atual=matriz_mapa[i-1]
+        new_coluna -= 1
     elif movimento=="c":
-        percurso_atual=matriz_mapa[j+1]
-    elif movimento=="e":
-        percurso_atual=matriz_mapa[j-1]
+        new_linha -= 1
+    elif movimento=="b":
+        new_linha += 1
 
+    return new_coluna, new_linha
 
-
-
-
-    if percurso_atual==shack:
-        vantagem+=time_shack
-    elif percurso_atual==jungle:
-        vantagem+=time_jungle
-    elif percurso_atual==lt:
-        vantagem+=time_lt
-    else:
-        vantagem+=time_M
-
-
-    return vantagem
-
-def att_geradores(geradores, vantagem, end_game):
-    if vantagem>100:
+def att_geradores(geradores, time_acumulado, end_game):
+    while time_acumulado>100 and geradores<5:
         geradores+=1
-        vantagem-=100
+        time_acumulado-=100
 
     if geradores==5:
         end_game==True
 
-    return geradores, end_game
+    return geradores, time_acumulado, end_game
     
-def estruturas(mapa, matriz_mapa):
-    time_shack=40
-    time_jungle=25
-    time_lt=20
-    time_M=5
+def estruturas(matriz_mapa, linha, coluna):
+    estrutura=matriz_mapa[linha][coluna]
 
-    if mapa=="MecMillan":
-        matriz_mapa[5][1]="C"
-        matriz_mapa[3][7]="J"
-        matriz_mapa=[1][5]="LT"
+    if estrutura=="C":
+        time=40
+        matriz_mapa[linha][coluna]="M"
+        print("🏃 Usou a Shack!")
 
-    elif mapa=="Autohaven":
-        matriz_mapa[1][6]="C"
-        matriz_mapa[2][2]="J"
-        matriz_mapa[6][3]="LT"
+    elif estrutura=="J":
+        time=25
+        matriz_mapa[linha][coluna]="M"
+        print("🏃 Usou a Jungle!")
 
+    elif estrutura=="LT":
+        time_lt=20
+        print("🏃 Usou a LT!")
+    
     else:
-        matriz_mapa[6][7]="C"
-        matriz_mapa[2][2]="J"
-        matriz_mapa[7][1]="LT"
+        time=5
+        print("🌿 Correu pelo mapa.")
 
-
-    
-
-
-    return matriz_mapa
+    return time
 
 
 print("DBCin x DBIp, que a melhor equipe vença! 🏆")
@@ -131,8 +104,76 @@ while assasino not in assasinos:
 
 mapa=input()
 coordenadas_iniciais=input().split(",")
+linha_inicial=int(coordenadas_iniciais[0])
+coluna_inicial=int(coordenadas_iniciais[1])
+
+distancia_assasino_d1=abs(linha_inicial-0)+abs(coluna_inicial-0)
+distancia_assasino_d2=abs(linha_inicial-0)+abs(coluna_inicial-8)
+distancia_assasino_d3=abs(linha_inicial-8)+abs(coluna_inicial-0)
+distancia_assasino_d4=abs(linha_inicial-8)+abs(coluna_inicial-8)
+
+maior_dist=max(distancia_assasino_d1, distancia_assasino_d2, distancia_assasino_d3, distancia_assasino_d4)
+
+matriz_mapa=Mapa(mapa)
+
+if maior_dist==distancia_assasino_d1:
+    linha_killer, coluna_killer = 0, 0
+    spawn_assasino=matriz_mapa[0][0]
+    print(f"O(A) {assasino} nasceu na posição {linha_killer}, {coluna_killer}.")
+    print("A vossa vantagem inicial de distância é de {distancia} espaços!")
+
+elif maior_dist==distancia_assasino_d2:
+    linha_killer, coluna_killer = 0, 8
+    spawn_assasino=matriz_mapa[0][8]
+    print(f"O(A) {assasino} nasceu na posição [{linha_killer}, {coluna_killer}].")
+    print("A vossa vantagem inicial de distância é de {distancia} espaços!")
+
+elif maior_dist==distancia_assasino_d3:
+    linha_killer, coluna_killer = 8, 0
+    spawn_assasino=matriz_mapa[8][0]
+    print(f"O(A) {assasino} nasceu na posição [{linha_killer}, {coluna_killer}].")
+    print("A vossa vantagem inicial de distância é de {distancia} espaços!")
+
+elif maior_dist==distancia_assasino_d4:
+    linha_killer, coluna_killer = 8, 8
+    spawn_assasino=matriz_mapa[8][8]
+    print(f"O(A) {assasino} nasceu na posição [{linha_killer}, {coluna_killer}].")
+    print("A vossa vantagem inicial de distância é de {distancia} espaços!")
 
 
 while end_game==False:
+    print(f"--- STATUS: {geradores}/5 Geradores | {total_ganchos}/12 Ganchos ---")
+
     sobrevivente=input()
-    movimento=input()
+    if sobrevivente not in sobreviventes:
+        print("⚠️ Personagem não pertence à equipe!")
+        print("Esse personagem não está previsto na sua equipe ou já tem 2 ganchos.")
+    else:
+        indice=sobreviventes.index(sobrevivente)
+        quantidade_ganchos=ganchos_sobreviventes[indice]
+
+        if quantidade_ganchos>2:
+            print(f"⚠️ O/A {sobrevivente} já tem 2 ganchos!")
+            print("Esse personagem não está previsto na sua equipe ou já tem 2 ganchos.")
+        else:
+            
+            movimento=input()
+            passos=movimento.split(", ")
+
+            fugindo=True
+            linha_atual=linha_inicial
+            coluna_atual=coluna_inicial
+
+            for i in passos:
+                if fugindo==True:
+                    new_coluna, new_linha=new_percurso()
+
+                    if 0 > new_coluna or new_coluna > 8 or 0 > new_linha or new_linha>8:
+                        print("❌ Travou na parede! Deixou fácil pro killer!")
+                        fugindo=False
+                    
+                    else:
+                        linha_atual, coluna_atual=new_linha, new_coluna
+                        vantagem+=estruturas(matriz_mapa, linha_atual, coluna_atual)
+
+    geradores+=att_geradores(geradores, time_acumulado, end_game)
