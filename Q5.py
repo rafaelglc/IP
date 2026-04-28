@@ -13,22 +13,26 @@ def mapa(mapa):
 
     return matriz_mapa
 
-def percursos(matriz_mapa, percurso):
+def percursos(matriz_mapa, coordenadas_iniciais):
     
-    percurso_atual=percurso
+    
+    linha_atual=coordenadas_iniciais[0]
+    coluna_atual=coordenadas_iniciais[1]
+
 
     d1=matriz_mapa[0][0]
     d2=matriz_mapa[0][8]
     d3=matriz_mapa[8][0]
     d4=matriz_mapa[8][8]
 
-    i=percurso[0]
-    j=percurso[1]
 
     d=matriz_mapa[i+1]
     e=matriz_mapa[i-1]
     c=matriz_mapa[i][j+1]
     b=matriz_mapa[i][j-1]
+
+    if nova_linha < 0 or nova_linha > 8:
+        print("❌ Travou na parede! Deixou fácil pro killer!")
 
 
     Distancia = (matriz_mapa[0] - matriz_mapa[1]) + (matriz_mapa[0][0] - matriz_mapa[0][1])
@@ -93,9 +97,9 @@ def estruturas(mapa, matriz_mapa):
     time_M=5
 
     if mapa=="MecMillan":
-        shake=matriz_mapa[5][1]="C"
-        jungle=matriz_mapa[3][7]="J"
-        lt=matriz_mapa=[1][5]="LT"
+        matriz_mapa[5][1]="C"
+        matriz_mapa[3][7]="J"
+        matriz_mapa=[1][5]="LT"
 
     elif mapa=="Autohaven":
         matriz_mapa[1][6]="C"
@@ -126,10 +130,9 @@ while assasino not in assasinos:
         print("Killer não previsto! Jogo será atrasado, até que a outra equipe escolha um válido!")
 
 mapa=input()
-coordenadas_iniciais=input()
+coordenadas_iniciais=input().split(",")
 
 
 while end_game==False:
     sobrevivente=input()
-    percurso=input().split(",")
     movimento=input()
