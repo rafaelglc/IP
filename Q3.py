@@ -1,52 +1,31 @@
-historico_dimensoes = ["C-137", "Planeta Squanch"]
-
-usuario_terminal=input()
-dimensao_alvo=input()
-fluido_portal=input()
-status_federacao=input()
-acao_historico=input()
-encerrar=False
-maiuscula=dimensao_alvo.replace(" ", "")
-numero_dimensoes=len(historico_dimensoes)
-
-print("Sistema Operacional RickOS v3.14 - Inicializando Arma de Portais...")
-
-while encerrar==False:
-
-    if fluido_portal=="Suco de Limão":
-        print("BURP Morty, você colocou Suco de Limão onde devia ter número! O sistema pifou!")
-        encerrar=True
-
+def movimentos(caminho, resistencia, total_itens):
+    if resistencia<=0:
+        print("A correnteza está muito forte... não consigo continuar.")
+        print("O príncipe afundou... Úrsula venceu desta vez.")
+        return
+    elif caminho=="":
+        print(f"Eric foi salvo! E Ariel ainda guardou {total_itens} bugigangas na sua gruta.")
+        return
     else:
-        fluido_portal=int(fluido_portal)
+        novo_caminho=caminho[1:]
+        movimento_atual=novo_caminho[0]
+        resistencia-=1
 
-        if usuario_terminal=="Rick Prime" or usuario_terminal=="Evil Morty":
-            print("Alerta Vermelho: Variante perigosa detectada no terminal!")
-
-        if maiuscula.isupper() and maiuscula.isalpha():
-            print("Não precisa gritar, Morty! O painel da arma não é surdo!")
-
-        if acao_historico=="anexar":
-            historico_dimensoes.append(dimensao_alvo)
-            print("Rastro anexado ao final do histórico.")
-
-        elif acao_historico=="esconder":
-            historico_dimensoes.remove[-1]
-            print("Apagando o último rastro... Federação idiota.")
-
-        elif acao_historico=="priorizar":
-            historico_dimensoes.insert([0], dimensao_alvo)
-            print("Sobrescrevendo prioridades. Nova dimensão no topo da lista!")
-
-        if fluido_portal>=50 and status_federacao=="alta" and numero_dimensoes>2:
-            print("Fuga tática ativada! Saltando por múltiplas dimensões para despistar os insetos!")
-
-        elif fluido_portal<15:
-            print("Ferrou! A Arma de Portais tá quase vazia. Pega a nave, Morty!")
-
-        elif status_federacao=="baixa" and dimensao_alvo in historico_dimensoes:
-            print(f"Ah, já estivemos na dimensão {dimensao_alvo}. Bora encher a cara no Blips and Chitz!")
-
+        if movimento_atual=="Linguado":
+            print("Obrigada, Linguado! Vamos rápido!")
+            return movimentos(novo_caminho, resistencia+2, total_itens)
+        elif movimento_atual=="Polvo":
+            print("Cuidado com os servos da bruxa!")
+            return movimentos(novo_caminho, resistencia-2, total_itens)
+        elif movimento_atual=="~":
+            return movimentos(novo_caminho, resistencia, total_itens)
         else:
-            print("Preparando salto interdimensional... Wubba Lubba Dub Dub!")
+            valor_bugiganga=int(movimento_atual)
+            total_itens+=valor_bugiganga
+            return movimentos(novo_caminho, resistencia, total_itens)
+        
 
+caminho=input().split(" ")
+resistencia=6
+total_itens=0
+movimentos(caminho, resistencia, total_itens)
